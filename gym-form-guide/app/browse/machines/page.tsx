@@ -1,9 +1,13 @@
-"use client";
-
 import Link from "next/link";
-import { useMemo } from "react";
-import { useSearchParams } from "next/navigation";
-import { sampleExercises } from "../../lib/sampleData";
+import { supabase } from "../../lib/supabaseClient";
+
+type ExerciseRow = {
+  id: string;
+  name: string;
+  slug: string;
+  equipment_type: string;
+  body_parts: string[];
+};
 
 type Category = {
   id: "all" | "legs" | "back";
@@ -16,26 +20,36 @@ const categories: Category[] = [
   { id: "back", label: "Back machines" },
 ];
 
-export default function BrowseMachinesPage() {
-  const searchParams = useSearchParams();
-  const cat = (searchParams.get("cat") ?? "all") as Category["id"];
+export default async function BrowseMachinesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cat?: string }>;
+}) {
+  const { cat: catRaw } = await searchParams;
+  const cat = (catRaw ?? "all") as Category["id"];
 
-  const filtered = useMemo(() => {
-    if (cat === "legs") {
-      return sampleExercises.filter((ex) =>
-        ex.bodyParts.some((b) => b === "legs" || b === "glutes"),
-      );
-    }
-    if (cat === "back") {
-      return sampleExercises.filter((ex) => ex.bodyParts.includes("back"));
-    }
-    return sampleExercises;
-  }, [cat]);
+  const { data, error } = await supabase
+    .from("exercises")
+    .select("id, name, slug, equipment_type, body_parts")
+    .order("name", { ascending: true });
+
+  const exercises = (data ?? []) as ExerciseRow[];
+
+  const filtered =
+    cat === "legs"
+      ? exercises.filter((ex) =>
+          ex.body_parts.some((b) => b === "legs" || b === "glutes"),
+        )
+      : cat === "back"
+        ? exercises.filter((ex) => ex.body_parts.includes("back"))
+        : exercises;
 
   return (
     <main className="mx-auto max-w-xl p-6">
       <h1 className="text-2xl font-semibold">Browse by machine</h1>
-      <p className="mt-2 text-sm text-neutral-600">Sample data for now.</p>
+      <p className="mt-2 text-sm text-neutral-600">
+        {error ? "Error loading exercises." : "Loaded from Supabase."}
+      </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
         {categories.map((c) => {
@@ -61,7 +75,7 @@ export default function BrowseMachinesPage() {
               {ex.name}
             </Link>
             <div className="mt-1 text-sm text-neutral-600">
-              {ex.equipmentType}
+              {ex.equipment_type}
             </div>
           </li>
         ))}
