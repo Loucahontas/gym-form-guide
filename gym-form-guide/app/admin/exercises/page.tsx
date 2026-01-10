@@ -1,5 +1,9 @@
 "use client";
 
+<Link className="mt-2 inline-block underline" href="/admin/exercises/list">
+  View exercise list
+</Link>
+
 import Link from "next/link";
 import { useState } from "react";
 
