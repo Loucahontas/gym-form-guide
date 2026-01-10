@@ -1,4 +1,3 @@
-// gym-form-guide/app/admin/exercises/page.tsx
 "use client";
 
 import Link from "next/link";
@@ -10,12 +9,24 @@ type CreatedExercise = {
   slug: string;
 };
 
+function linesToArray(value: string): string[] {
+  return value
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+}
+
 export default function AdminExercisesPage() {
   const [adminToken, setAdminToken] = useState("");
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [equipmentType, setEquipmentType] = useState("Machine");
   const [bodyParts, setBodyParts] = useState("chest");
+
+  const [setupCuesText, setSetupCuesText] = useState("");
+  const [formCuesText, setFormCuesText] = useState("");
+  const [mistakesText, setMistakesText] = useState("");
+
   const [result, setResult] = useState<CreatedExercise | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,6 +52,9 @@ export default function AdminExercisesPage() {
             .split(",")
             .map((p) => p.trim())
             .filter(Boolean),
+          setup_cues: linesToArray(setupCuesText),
+          form_cues: linesToArray(formCuesText),
+          common_mistakes: linesToArray(mistakesText),
         }),
       });
 
@@ -54,6 +68,9 @@ export default function AdminExercisesPage() {
       setResult(json.exercise);
       setName("");
       setSlug("");
+      setSetupCuesText("");
+      setFormCuesText("");
+      setMistakesText("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
@@ -132,6 +149,48 @@ export default function AdminExercisesPage() {
             onChange={(e) => setBodyParts(e.target.value)}
             placeholder="e.g. chest, shoulders, triceps"
             className="mt-2 w-full rounded-lg border bg-transparent p-3 text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-neutral-600" htmlFor="setup">
+            Setup cues (one per line)
+          </label>
+          <textarea
+            id="setup"
+            value={setupCuesText}
+            onChange={(e) => setSetupCuesText(e.target.value)}
+            className="mt-2 w-full rounded-lg border bg-transparent p-3 text-sm"
+            rows={4}
+            placeholder={"Set seat height\nFeet flat on platform"}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-neutral-600" htmlFor="form">
+            Form cues (one per line)
+          </label>
+          <textarea
+            id="form"
+            value={formCuesText}
+            onChange={(e) => setFormCuesText(e.target.value)}
+            className="mt-2 w-full rounded-lg border bg-transparent p-3 text-sm"
+            rows={4}
+            placeholder={"Control the descent\nKeep ribs down"}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm text-neutral-600" htmlFor="mistakes">
+            Common mistakes (one per line)
+          </label>
+          <textarea
+            id="mistakes"
+            value={mistakesText}
+            onChange={(e) => setMistakesText(e.target.value)}
+            className="mt-2 w-full rounded-lg border bg-transparent p-3 text-sm"
+            rows={4}
+            placeholder={"Knees caving in\nBouncing the weight"}
           />
         </div>
 

@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
-import { supabaseServer } from "@/app/lib/supabaseServer";
+import { supabaseServer } from "../../../lib/supabaseServer";
 
 function isAuthorised(req: Request): boolean {
   const token = req.headers.get("x-admin-token");
-  return Boolean(token && process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN);
+  return Boolean(
+    token && process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN,
+  );
 }
 
 export async function POST(req: Request) {
@@ -16,6 +18,9 @@ export async function POST(req: Request) {
     slug?: string;
     equipment_type?: string;
     body_parts?: string[];
+    setup_cues?: string[];
+    form_cues?: string[];
+    common_mistakes?: string[];
   };
 
   if (!body.name || !body.slug) {
@@ -33,6 +38,9 @@ export async function POST(req: Request) {
         slug: body.slug,
         equipment_type: body.equipment_type ?? "Machine",
         body_parts: body.body_parts ?? [],
+        setup_cues: body.setup_cues ?? [],
+        form_cues: body.form_cues ?? [],
+        common_mistakes: body.common_mistakes ?? [],
       },
     ])
     .select("id, name, slug")
