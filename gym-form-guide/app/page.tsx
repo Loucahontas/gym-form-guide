@@ -10,6 +10,7 @@ export default function Home() {
     { href: "/admin/login", label: "Admin login" },
     { href: "/admin", label: "Admin dashboard" },
     { href: "/admin/exercises", label: "Admin exercises" },
+    { href: "/admin/clips", label: "Admin clips" },
   ];
 
   return (
