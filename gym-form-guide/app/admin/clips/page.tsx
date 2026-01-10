@@ -62,6 +62,10 @@ export default function AdminClipsPage() {
         Add video links to an exercise by slug.
       </p>
 
+      <Link className="mt-2 inline-block underline" href="/admin/clips/list">
+  View clip list
+</Link>
+
       <form onSubmit={onSubmit} className="mt-6 grid gap-4">
         <div>
           <label className="block text-sm text-neutral-600" htmlFor="token">
