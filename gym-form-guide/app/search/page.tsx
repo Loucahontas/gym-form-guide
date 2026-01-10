@@ -1,14 +1,22 @@
+// gym-form-guide/app/search/page.tsx
 "use client";
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { sampleExercises } from "../lib/sampleData";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
 
+  const searchParams = useSearchParams();
+  const qParam = searchParams.get("q") ?? "";
+
+  // Use the URL query only when the user hasn't typed anything yet
+  const effectiveQuery = query.trim() !== "" ? query : qParam;
+
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = effectiveQuery.trim().toLowerCase();
     if (!q) return [];
 
     return sampleExercises.filter((ex) => {
@@ -24,7 +32,7 @@ export default function SearchPage() {
 
       return haystack.includes(q);
     });
-  }, [query]);
+  }, [effectiveQuery]);
 
   return (
     <main className="mx-auto max-w-xl p-6">
@@ -35,13 +43,13 @@ export default function SearchPage() {
       </label>
       <input
         id="q"
-        value={query}
+        value={effectiveQuery}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="e.g. leg press, pull down, back"
         className="mt-2 w-full rounded-lg border bg-transparent p-3 text-sm"
       />
 
-      {query.trim() && (
+      {effectiveQuery.trim() && (
         <div className="mt-6">
           <h2 className="text-sm font-semibold text-neutral-200">
             Results ({results.length})
