@@ -26,7 +26,7 @@ export default async function SearchPage({
     const { data: direct } = await supabase
       .from("exercises")
       .select("id, name, slug, equipment_type")
-      .or(`name.ilike.${like},slug.ilike.${like}`)
+      .or(`name.ilike.${like},slug.ilike.${like},body_parts.cs.{${query}}`)
       .order("name", { ascending: true });
 
     // 2) Matches on aliases -> map to exercises
