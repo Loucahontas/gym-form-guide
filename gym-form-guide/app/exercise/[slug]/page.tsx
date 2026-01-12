@@ -1,4 +1,6 @@
+// gym-form-guide/app/exercise/[slug]/page.tsx
 import Link from "next/link";
+import FavouriteToggle from "../../components/FavouriteToggle";
 import { supabase } from "../../lib/supabaseClient";
 
 type ExerciseRow = {
@@ -66,6 +68,16 @@ export default async function ExercisePage({
           <div>
             <h2 className="text-xl font-semibold">{exercise.name}</h2>
             <p className="text-sm text-neutral-600">{exercise.equipment_type}</p>
+
+            <div className="mt-3">
+              <FavouriteToggle
+                item={{
+                  slug: exercise.slug,
+                  name: exercise.name,
+                  equipmentType: exercise.equipment_type,
+                }}
+              />
+            </div>
           </div>
 
           <section>
